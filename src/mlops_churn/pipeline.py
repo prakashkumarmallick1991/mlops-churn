@@ -43,7 +43,7 @@ def run_training():
         )
 
         # 5. Model parameters
-        n_estimators = 200
+        n_estimators = 300
         random_state = 42
 
         model = RandomForestClassifier(
@@ -73,6 +73,7 @@ def run_training():
         mlflow.sklearn.log_model(
             model,
             name="churn_model",
+            registered_model_name="churn_model",
         )
 
         # 11. Save local copy
