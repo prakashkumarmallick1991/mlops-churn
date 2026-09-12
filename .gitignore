@@ -7,3 +7,4 @@ mlruns/
 models/*.pkl
 data/raw/*
 .env
+*.egg-info/
