@@ -4,6 +4,7 @@ __pycache__/
 .pytest_cache/
 .mlflow/
 mlruns/
+mlflow.db
 models/*.pkl
 data/raw/*
 .env

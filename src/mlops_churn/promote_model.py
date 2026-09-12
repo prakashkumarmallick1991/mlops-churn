@@ -1,9 +1,18 @@
 import mlflow
+import os
 from mlflow import MlflowClient
 
 
 MODEL_NAME = "churn_model"
 
+mlflow_tracking_uri = os.getenv(
+    "MLFLOW_TRACKING_URI",
+    "http://127.0.0.1:5000"
+)
+
+from mlflow import MlflowClient
+
+client = MlflowClient(tracking_uri=mlflow_tracking_uri)
 
 def promote_latest_model():
     client = MlflowClient()

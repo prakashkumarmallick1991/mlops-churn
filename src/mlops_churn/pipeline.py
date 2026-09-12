@@ -3,6 +3,7 @@ from pathlib import Path
 import joblib
 import mlflow
 import mlflow.sklearn
+import os
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.model_selection import train_test_split
 
@@ -17,6 +18,10 @@ MODEL_PATH = Path("models/churn_model.pkl")
 
 
 def run_training():
+
+    mlflow.set_tracking_uri(
+    os.getenv("MLFLOW_TRACKING_URI", "http://127.0.0.1:5000")
+    )
 
     mlflow.set_experiment("churn-prediction")
 
