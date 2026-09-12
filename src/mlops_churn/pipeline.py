@@ -1,6 +1,8 @@
 from pathlib import Path
 
 import joblib
+import mlflow
+import mlflow.sklearn
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.model_selection import train_test_split
 
@@ -16,46 +18,68 @@ MODEL_PATH = Path("models/churn_model.pkl")
 
 def run_training():
 
-    # 1. Load data
-    df = create_dataset()
+    mlflow.set_experiment("churn-prediction")
 
-    
-    df = validate_data(df)
-    print("Data validation passed")
+    with mlflow.start_run():
 
-    # 2. Separate features and target
-    X = df.drop(columns=["churn"])
-    y = df["churn"]
+        # 1. Load data
+        df = create_dataset()
 
-    # 3. Train/test split
-    X_train, X_test, y_train, y_test = train_test_split(
-        X,
-        y,
-        test_size=0.2,
-        random_state=42,
-        stratify=y,
-    )
+        # 2. Validate data
+        df = validate_data(df)
+        print("Data validation passed")
 
-    # 4. Train model
-    model = RandomForestClassifier(
-        n_estimators=100,
-        random_state=42,
-    )
+        # 3. Separate features and target
+        X = df.drop(columns=["churn"])
+        y = df["churn"]
 
-    model.fit(X_train, y_train)
+        # 4. Train/test split
+        X_train, X_test, y_train, y_test = train_test_split(
+            X,
+            y,
+            test_size=0.2,
+            random_state=42,
+            stratify=y,
+        )
 
-    # 5. Evaluate
-    metrics = evaluate_model(
-        model,
-        X_test,
-        y_test,
-    )
+        # 5. Model parameters
+        n_estimators = 200
+        random_state = 42
 
-    # 6. Save model
-    MODEL_PATH.parent.mkdir(exist_ok=True)
-    joblib.dump(model, MODEL_PATH)
+        model = RandomForestClassifier(
+            n_estimators=n_estimators,
+            random_state=random_state,
+        )
 
-    return metrics
+        # 6. Train
+        model.fit(X_train, y_train)
+
+        # 7. Evaluate
+        metrics = evaluate_model(
+            model,
+            X_test,
+            y_test,
+        )
+
+        # 8. Log parameters
+        mlflow.log_param("model_type", "RandomForestClassifier")
+        mlflow.log_param("n_estimators", n_estimators)
+        mlflow.log_param("random_state", random_state)
+
+        # 9. Log metrics
+        mlflow.log_metrics(metrics)
+
+        # 10. Log model
+        mlflow.sklearn.log_model(
+            model,
+            name="churn_model",
+        )
+
+        # 11. Save local copy
+        MODEL_PATH.parent.mkdir(exist_ok=True)
+        joblib.dump(model, MODEL_PATH)
+
+        return metrics
 
 
 if __name__ == "__main__":
