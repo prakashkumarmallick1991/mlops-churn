@@ -6,6 +6,9 @@ from sklearn.model_selection import train_test_split
 
 from src.mlops_churn.data import create_dataset
 from src.mlops_churn.evaluate import evaluate_model
+from src.mlops_churn.validation import validate_data
+
+
 
 
 MODEL_PATH = Path("models/churn_model.pkl")
@@ -15,6 +18,10 @@ def run_training():
 
     # 1. Load data
     df = create_dataset()
+
+    
+    df = validate_data(df)
+    print("Data validation passed")
 
     # 2. Separate features and target
     X = df.drop(columns=["churn"])
