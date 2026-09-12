@@ -1,6 +1,7 @@
 import mlflow
 import mlflow.sklearn
 import pandas as pd
+import os
 
 from fastapi import FastAPI
 from pydantic import BaseModel
@@ -12,7 +13,17 @@ app = FastAPI(
 )
 
 
-MODEL_URI = "models:/churn_model@champion"
+MODEL_URI = os.getenv(
+    "MODEL_URI",
+    "models:/churn_model@champion",
+)
+
+MLFLOW_TRACKING_URI = os.getenv(
+    "MLFLOW_TRACKING_URI",
+    "http://127.0.0.1:5000",
+)
+
+mlflow.set_tracking_uri(MLFLOW_TRACKING_URI)
 
 
 def load_model():
