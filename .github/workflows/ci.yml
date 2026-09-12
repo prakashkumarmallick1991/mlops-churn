@@ -29,3 +29,6 @@ jobs:
 
       - name: Run tests
         run: pytest
+
+      - name: Run training pipeline
+        run: python -m mlops_churn.pipeline
